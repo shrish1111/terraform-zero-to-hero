@@ -1,8 +1,9 @@
 # Knowledge Topics:
 
 In Terraform, you can use the output (attribute) of one resource as the input to another resource by directly referencing it using the resource_type.resource_name.attribute syntax.
-
-
+#
+#
+#
 
 🧩 Example: Using Output of One Resource as Input to Another
 Let’s say:
@@ -12,12 +13,14 @@ You create a security group, and
 Then you launch an EC2 instance using the ID of that security group.
 
 ✅ Full Working Example
+#
+
+#
 
 📄 main.tf
 provider "aws" {
   region = "us-east-1"
 }
-
 
 
 **Create a Security Group**
@@ -47,6 +50,7 @@ resource "aws_security_group" "web_sg" {
   }
 }
 
+#
 
 
 **Launch EC2 using the SG's ID**
@@ -60,7 +64,7 @@ resource "aws_instance" "web_server" {
   }
 }
 
-
+#
 
 🔍 How It Works
 **aws_security_group.web_sg.id is evaluated by Terraform at runtime.**
@@ -85,9 +89,9 @@ module "my_module" {
   vpc_id  = aws_vpc.main.id
 
 
-
+#
 ---------------------------------------------------------------------------------------------------------------
-
+#
 
 **If you want to use the length in a resource (e.g., for naming, count, tags, etc.), just reference it directly:**
 
@@ -111,6 +115,7 @@ Resulting bucket name will be: my-bucket-3
 
 The tag ItemCount = "3" will be added
 
+#
 
 
 **✅ Option 2: Assign to a Local Variable (Cleaner)
@@ -128,6 +133,7 @@ resource "aws_s3_bucket" "example" {
   }
 }
 
+#
 
 
 **🚫 What You Don't Need to Do:
@@ -139,6 +145,7 @@ output "list_length" {
 }
 That’s only useful for displaying or passing between modules — not for use within the same .tf code block.
 
+#
 
 
 **🧠 Bonus: Use in a count Meta-Argument**
