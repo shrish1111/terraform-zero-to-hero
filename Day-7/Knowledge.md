@@ -119,3 +119,67 @@ resource "some_resource" "example" {
   password = data.vault_kv_secret_v2.example.data["db_password"]
 }
 ```
+#
+
+✅ What is mount
+This is the path where your secrets engine is enabled in Vault.
+
+By default, Vault enables KV at secret/.
+
+But you can enable it at any custom path (e.g., kv/, internal/, apps/).
+
+Example
+```
+vault secrets enable -path=mysecrets kv-v2
+```
+Then, mount is mysecrets.
+
+✅ name
+This is the path inside the mount where the actual secret lives.
+
+Example
+```
+vault kv put secret/myapp/config db_password="mypassword"
+```
+Then:
+
+mount = "secret"
+
+name = "myapp/config"
+
+Example if custom mount
+```
+vault kv put mysecrets/project/db username="user" password="pass"
+```
+Then:
+
+mount = "mysecrets"
+
+name = "project/db"
+
+💡 3️⃣ What if I do not pass VAULT_TOKEN in main.tf but define in GitLab CI?  
+✅ Yes! If you define VAULT_TOKEN in your CI/CD environment (e.g., in GitLab secret variables), Terraform will automatically pick it up, even if you don't set it explicitly in provider block.
+
+📄 Example in GitLab
+In GitLab CI settings → Variables:
+
+VAULT_ADDR = https://vault.mycompany.com
+VAULT_TOKEN = s.xxxxxxxx
+#
+In .gitlab-ci.yml
+
+before_script:
+  - terraform init
+  - terraform workspace select dev || terraform workspace new dev
+In main.tf
+```
+provider "vault" {
+  address = "https://vault.mycompany.com"
+}
+```
+No need to write token explicitly — Terraform Vault provider will look for VAULT_TOKEN environment variable first.
+
+⚠️ Priority order (how Vault provider picks credentials)
+1️⃣ VAULT_TOKEN env variable (most common)
+2️⃣ Token set in provider block as token
+3️⃣ Token in ~/.vault-token file (local)
